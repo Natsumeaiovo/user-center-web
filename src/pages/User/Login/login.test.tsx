@@ -5,6 +5,7 @@ import { TestBrowser } from '@@/testBrowser';
 // @ts-ignore
 import { startMock } from '@@/requestRecordMock';
 
+
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
     setTimeout(() => {
