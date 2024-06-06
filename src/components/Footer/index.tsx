@@ -18,7 +18,7 @@ const Footer: React.FC = () => {
         {
           key: 'natsumeaiovo',
           title: <><GithubOutlined /> GitHub </>,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          href: 'https://github.com/natsumeaiovo',
           blankTarget: true,
         },
         // {
