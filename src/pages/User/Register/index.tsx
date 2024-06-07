@@ -1,14 +1,14 @@
 import {Footer} from '@/components';
-import {login} from '@/services/ant-design-pro/api';
+import {register} from '@/services/ant-design-pro/api';
 import {LockOutlined, UserOutlined,} from '@ant-design/icons';
-import {LoginForm, ProFormCheckbox, ProFormText,} from '@ant-design/pro-components';
-import {Helmet, history, Link, useModel} from '@umijs/max';
-import {Alert, Divider, message, Space, Tabs} from 'antd';
+import {LoginForm, ProFormText,} from '@ant-design/pro-components';
+import {Helmet, history} from '@umijs/max';
+import {message, Space, Tabs} from 'antd';
 import {createStyles} from 'antd-style';
 import React, {useState} from 'react';
-import {flushSync} from 'react-dom';
 import Settings from '../../../../config/defaultSettings';
 import {SYSTEM_LOGO} from "@/constants";
+import {Link} from "@@/exports";
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -45,69 +45,45 @@ const useStyles = createStyles(({ token }) => {
     },
   };
 });
-const LoginMessage: React.FC<{
-  content: string;
-}> = ({ content }) => {
-  return (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
-};
-const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
-  const { styles } = useStyles();
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
-    }
-  };
-  const handleSubmit = async (values: API.LoginParams) => {
-    try {
-      // 登录
-      const user = await login({
-        ...values,
-        type,
-      });
-      if (user) {
-        const defaultLoginSuccessMessage = '登录成功！';
-        message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
-        const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
-        return;
-      }
 
-      // 如果失败去设置用户错误信息
-      setUserLoginState(user);
+const Register: React.FC = () => {
+  const [type, setType] = useState<string>('account');
+  const { styles } = useStyles();
+
+  // 表单提交
+  const handleSubmit = async (values: API.RegisterParams) => {
+    const { userPassword, checkPassword } = values;
+    // 校验
+    if (userPassword !== checkPassword) {
+      message.error('两次输入密码不一致！');
+      return;
+    }
+
+    try {
+      // 注册
+      const id = await register(values);
+      if (id > 0) {
+        const defaultLoginSuccessMessage = '注册成功！';
+        message.success(defaultLoginSuccessMessage);
+        if (!history) return;
+        history.push('/user/login');
+        return;
+      } else {
+        throw new Error(`register error id = ${id}`);
+      }
     } catch (error) {
-      const defaultLoginFailureMessage = '登录失败，请重试！';
+      const defaultLoginFailureMessage = '注册失败，请重试！';
       console.log(error);
       message.error(defaultLoginFailureMessage);
     }
   };
-  const { status, type: loginType } = userLoginState;
   return (
     <div className={styles.container}>
       <Helmet>
         <title>
-          {'登录'}- {Settings.title}
+          {'注册'}- {Settings.title}
         </title>
       </Helmet>
-
       <div
         style={{
           flex: '1',
@@ -115,6 +91,11 @@ const Login: React.FC = () => {
         }}
       >
         <LoginForm
+          submitter={{
+            searchConfig: {
+              submitText: '注册',
+            }
+          }}
           contentStyle={{
             minWidth: 280,
             maxWidth: '75vw',
@@ -127,7 +108,7 @@ const Login: React.FC = () => {
           }}
 
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as API.RegisterParams);
           }}
         >
           <Tabs
@@ -137,14 +118,11 @@ const Login: React.FC = () => {
             items={[
               {
                 key: 'account',
-                label: '账号密码登录',
+                label: '账号注册',
               },
             ]}
           />
 
-          {status === 'error' && loginType === 'account' && (
-            <LoginMessage content={'错误的账号和密码'} />
-          )}
           {type === 'account' && (
             <>
               <ProFormText
@@ -180,6 +158,25 @@ const Login: React.FC = () => {
                   },
                 ]}
               />
+              <ProFormText.Password
+                name="checkPassword"
+                fieldProps={{
+                  size: 'large',
+                  prefix: <LockOutlined />,
+                }}
+                placeholder={'请再次输入密码'}
+                rules={[
+                  {
+                    required: true,
+                    message: '确认密码是必填项！',
+                  },
+                  {
+                    min: 8,
+                    type: 'string',
+                    message: '确认密码长度不能小于8位！',
+                  },
+                ]}
+              />
             </>
           )}
 
@@ -188,20 +185,9 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <Space split={<Divider type="vertical" />}>
-              <ProFormCheckbox noStyle name="autoLogin">
-                自动登录
-              </ProFormCheckbox>
-              <Link to="/user/register">新用户注册</Link>
-              <a
-                style={{
-                  float: 'right',
-                }}
-                href={"mailto: natsumeaiovo@outlook.com"}
-              >
-                忘记密码
-              </a>
-            </Space>
+            <Link to="/user/login" style={{ textAlign: 'center', display: 'block' }}>
+              返回登录
+            </Link>
           </div>
         </LoginForm>
       </div>
@@ -209,4 +195,4 @@ const Login: React.FC = () => {
     </div>
   );
 };
-export default Login;
+export default Register;
