@@ -11,8 +11,9 @@ declare namespace API {
     phone: string;
     email: string;
     userStatus: number;
-    createTime: Date;
     userRole: number;
+    planetCode: string;
+    createTime: Date;
     // name?: string;
     // avatar?: string;
     // userid?: string;
@@ -84,6 +85,7 @@ declare namespace API {
     userAccount?: string;
     userPassword?: string;
     checkPassword?: string;
+    planetCode?: string;
     type?: string;
   };
 

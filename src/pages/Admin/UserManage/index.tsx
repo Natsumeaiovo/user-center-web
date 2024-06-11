@@ -32,6 +32,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '用户账户',
     dataIndex: 'userAccount',
+    ellipsis: true,
     copyable: true,
     // ellipsis: true,
     // tooltip: '数据过长会自动收缩',
@@ -50,28 +51,39 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '性别',
     dataIndex: 'gender',
+    width: 60,
   },
   {
     title: '电话',
     dataIndex: 'phone',
+    ellipsis: true,
     copyable: true,
   },
   {
     title: '邮箱',
     dataIndex: 'email',
+    ellipsis: true,
     copyable: true,
   },
   {
-    title: '用户状态',
+    title: '状态',
+    ellipsis: true,
     dataIndex: 'userStatus',
   },
   {
+    title: '星球编号',
+    ellipsis: true,
+    dataIndex: 'planetCode',
+  },
+  {
     title: '创建时间',
+    ellipsis: true,
     dataIndex: 'createTime',
     valueType: 'date',
   },
   {
     title: '角色',
+    ellipsis: true,
     dataIndex: 'userRole',
     valueType: 'select',
     valueEnum: {
