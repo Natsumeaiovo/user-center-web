@@ -168,7 +168,8 @@ export default () => {
       request={async (params, sort, filter) => {
         console.log(sort, filter);
         await waitTime(2000);
-        const userList = await searchUsers();
+        const searchResult = await searchUsers();
+        const userList = searchResult.data;
         return {
           data: userList
         }

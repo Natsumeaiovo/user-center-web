@@ -3,7 +3,7 @@ import {register} from '@/services/ant-design-pro/api';
 import {LockOutlined, UserOutlined,} from '@ant-design/icons';
 import {LoginForm, ProFormText,} from '@ant-design/pro-components';
 import {Helmet, history} from '@umijs/max';
-import {message, Space, Tabs} from 'antd';
+import {message, Tabs} from 'antd';
 import {createStyles} from 'antd-style';
 import React, {useState} from 'react';
 import Settings from '../../../../config/defaultSettings';
@@ -61,20 +61,20 @@ const Register: React.FC = () => {
 
     try {
       // 注册
-      const id = await register(values);
-      if (id > 0) {
+      const res = await register(values);
+      if (res.code === 0 && res.data > 0) {
         const defaultLoginSuccessMessage = '注册成功！';
         message.success(defaultLoginSuccessMessage);
         if (!history) return;
         history.push('/user/login');
         return;
       } else {
-        throw new Error(`register error id = ${id}`);
+        throw new Error(res.description);
       }
-    } catch (error) {
+    } catch (error: any) {
       const defaultLoginFailureMessage = '注册失败，请重试！';
       console.log(error);
-      message.error(defaultLoginFailureMessage);
+      message.error(error.message ?? defaultLoginFailureMessage);
     }
   };
   return (

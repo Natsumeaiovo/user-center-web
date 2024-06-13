@@ -27,9 +27,10 @@ export async function getInitialState(): Promise<{
   fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
-    const currentUser: API.CurrentUser = await queryCurrentUser({
+    const result: API.BaseResponse<API.CurrentUser> = await queryCurrentUser({
       skipErrorHandler: true,
     });
+    const currentUser = result.data;
     try {
       return currentUser;
     } catch (error) {
